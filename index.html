@@ -319,7 +319,9 @@
         messaging.getToken({
           vapidKey: "BA4BGGkfenMbP1QsbzVehQs9aJZQux71dqS59ZB-p8sgR3kLbzVCjIOPX_NYfzgvcUIG7nsFrrWyOJ3ES1Gf4NU"
         }).then((token) => {
-          console.log("✅ FCM TOKEN:", token);
+  alert("✅ FCM TOKEN:\n" + token); // ekrana bastır
+  console.log("✅ FCM TOKEN:", token);
+})
         }).catch((err) => {
           console.warn("❌ Token alınamadı:", err);
         });
