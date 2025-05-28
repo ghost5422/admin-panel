@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
@@ -304,6 +304,30 @@
       Swal.fire('Sipariş Onaylandı!', '', 'success');
     }
   </script>
+ <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js"></script>
 
+<script>
+  const messaging = firebase.messaging();
+
+  navigator.serviceWorker.register('/firebase-messaging-sw.js').then((registration) => {
+    messaging.useServiceWorker(registration);
+
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        messaging.getToken({
+          vapidKey: "BA4BGGkfenMbP1QsbzVehQs9aJZQux71dqS59ZB-p8sgR3kLbzVCjIOPX_NYfzgvcUIG7nsFrrWyOJ3ES1Gf4NU"
+        }).then((token) => {
+          console.log("✅ FCM TOKEN:", token);
+        }).catch((err) => {
+          console.warn("❌ Token alınamadı:", err);
+        });
+      } else {
+        console.warn("🔕 Bildirim izni reddedildi.");
+      }
+    });
+  }).catch((err) => {
+    console.error("🚫 Service Worker kaydı başarısız:", err);
+  });
+</script>
 </body>
 </html>
