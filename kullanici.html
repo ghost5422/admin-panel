@@ -88,6 +88,13 @@ th {
   </style>
 </head>
 <body>
+  <script>
+  // Giriş yapılmamışsa kullanıcıyı geri yolla
+  const user = localStorage.getItem("loggedInUser");
+  if (!user) {
+    window.location.href = "index.html"; // giriş sayfanın adı buysa bu şekilde kalabilir
+  }
+</script>
   <div class="container">
     <h2><i class="fas fa-user-plus"></i> Kullanıcı Ekle</h2>
 
