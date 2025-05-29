@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kullanıcı Yönetimi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #eef2f7;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border 0.2s ease;
+    }
+    input:focus {
+  border-color: #dc3545; /* mavi yerine kırmızı */
+  outline: none;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  background: #dc3545; /* kırmızı */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #c62828; /* koyu kırmızı hover */
+}
+.submit-btn {
+  margin-top: 10px;
+  background-color: #dc3545;
+}
+.submit-btn:hover {
+  background-color: #c62828;
+}
+th {
+  background: #dc3545; /* tablo başlığı rengi kırmızı */
+  color: white;
+  padding: 12px;
+  text-align: left;
+}
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    td .actions i {
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+    td .actions i.fa-edit { color: #ffc107; }
+    td .actions i.fa-trash-alt { color: #dc3545; }
+    td .actions i:hover { opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fas fa-user-plus"></i> Kullanıcı Ekle</h2>
+
+    <button class="submit-btn" onclick="window.location.href='admin_panel.html'">
+      <i class="fas fa-arrow-left"></i> Geri Dön
+    </button>
+
+    <div class="form-group">
+      <label><i class="fas fa-user"></i> Kullanıcı Adı</label>
+      <input type="text" id="username" placeholder="Kullanıcı adı">
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-lock"></i> Şifre</label>
+      <input type="text" id="password" placeholder="Şifre">
+    </div>
+    <button onclick="addUser()"><i class="fas fa-plus-circle"></i> Kullanıcıyı Ekle</button>
+
+    <h2 style="margin-top: 40px;"><i class="fas fa-users-cog"></i> Kullanıcılar</h2>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th><i class="fas fa-user"></i> Kullanıcı Adı</th>
+          <th><i class="fas fa-eye"></i> Şifre</th>
+          <th><i class="fas fa-tools"></i> İşlemler</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDNbgKzJdBKEZUnWH09Az6ZCwUefWJXhY",
+      authDomain: "onlinesiparis-2cf91.firebaseapp.com",
+      projectId: "onlinesiparis-2cf91",
+      storageBucket: "onlinesiparis-2cf91.appspot.com",
+      messagingSenderId: "366801664755",
+      appId: "1:366801664755:web:57b577f1943ebdf1ab8c85",
+      databaseURL: "https://onlinesiparis-2cf91-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    async function sha256(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function addUser() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!username || !password) {
+        Swal.fire("Uyarı", "Boş alan bırakmayın!", "warning");
+        return;
+      }
+
+      const hash = await sha256(password);
+
+      db.ref("adminAccess/" + username).set({
+        passwordHash: hash,
+        password: password
+      }).then(() => {
+        Swal.fire("Başarılı", "Kullanıcı eklendi!", "success");
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        loadUsers();
+      });
+    }
+
+    function loadUsers() {
+      db.ref("adminAccess").once("value", snapshot => {
+        const tbody = document.querySelector("#userTable tbody");
+        tbody.innerHTML = "";
+        snapshot.forEach(child => {
+          const username = child.key;
+          const password = child.val().password;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${username}</td>
+            <td>${password}</td>
+            <td class="actions">
+              <i class="fas fa-edit" title="Düzenle" onclick="editUser('${username}')"></i>
+              <i class="fas fa-trash-alt" title="Sil" onclick="deleteUser('${username}')"></i>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    function deleteUser(username) {
+      Swal.fire({
+        title: "Emin misiniz?",
+        text: `${username} adlı kullanıcı silinecek!`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Evet, sil",
+        cancelButtonText: "İptal"
+      }).then(result => {
+        if (result.isConfirmed) {
+          db.ref("adminAccess/" + username).remove().then(() => {
+            Swal.fire("Silindi!", "Kullanıcı silindi.", "success");
+            loadUsers();
+          });
+        }
+      });
+    }
+
+    function editUser(username) {
+      Swal.fire({
+        title: `${username} - Yeni Şifre`,
+        input: 'text',
+        inputLabel: 'Yeni şifre girin',
+        inputPlaceholder: 'Yeni şifre...',
+        showCancelButton: true,
+        confirmButtonText: 'Güncelle',
+        cancelButtonText: 'İptal',
+        preConfirm: async (newPass) => {
+          if (!newPass) return Swal.showValidationMessage("Şifre boş olamaz");
+          const newHash = await sha256(newPass);
+          return db.ref("adminAccess/" + username).set({
+            passwordHash: newHash,
+            password: newPass
+          });
+        }
+      }).then(result => {
+        if (result.isConfirmed) {
+          Swal.fire("Güncellendi", "Şifre başarıyla değiştirildi!", "success");
+          loadUsers();
+        }
+      });
+    }
+
+    window.onload = loadUsers;
+  </script>
+</body>
+</html>
