@@ -230,7 +230,14 @@ button {
   </style>
 </head>
 <body>
-
+<script>
+  // Oturum kontrolü
+  const user = localStorage.getItem("loggedInUser");
+  if (!user) {
+    // Kullanıcı giriş yapmamışsa yönlendir
+    window.location.href = "giris.html";
+  }
+</script>
 <div class="button-row">
   <button class="admin-button logout" onclick="logout()">
     <i class="fas fa-sign-out-alt"></i> Çıkış Yap
@@ -543,7 +550,14 @@ button {
 <script>
   function logout() {
     localStorage.removeItem("loggedInUser");
-    window.location.href = "giris.html"; // giriş sayfan neyse onu yaz
+    window.location.href = "index.html"; // giriş sayfan neyse onu yaz
+  }
+</script>
+<!-- sayfa içeriği bitti -->
+<script>
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "index.html"; // giriş sayfanın adı buysa bu kalabilir
   }
 </script>
 </body>
