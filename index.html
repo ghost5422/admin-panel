@@ -2,136 +2,96 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Paneli</title>
+  <title>Admin Giriş</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Fonts -->
+
+  <!-- Fontlar ve ikonlar -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body {
-  font-family: 'Poppins', sans-serif;
-  background: #eef2f7;
-  padding: 20px;
-  color: #1a1a1a;
-}
-h1 {
-  color: #2c3e50;
-  margin-top: 30px;
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 10px;
-}
-.form-group {
-  margin-bottom: 15px;
-}
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-input, button {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-button {
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.submit-btn {
-  background: #007bff;
-  color: white;
-  border: none;
-  margin-top: 10px;
-}
-.submit-btn:hover {
-  background: #1565c0;
-}
-.card {
-  background: white;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 15px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.card strong {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 18px;
-}
-.actions {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.delete-btn, .confirm-btn {
-  border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.delete-btn {
-  background: #dc3545;
-  color: white;
-}
-.delete-btn:hover {
-  background: #c62828;
-}
-.confirm-btn {
-  background: #28a745;
-  color: white;
-}
-.confirm-btn:hover {
-  background: #388e3c;
-}
-.status {
-  margin-top: 8px;
-  font-weight: bold;
-}
-.status.pending {
-  color: orange;
-}
-.status.ready {
-  color: green;
-}
-.icon {
-  margin-right: 5px;
-}
-  </style>
-</head>
-<body>
-
-  <h1>🍽️ Menü Ekle</h1>
-  <div class="form-group">
-    <label>Yemek Adı</label>
-    <input type="text" id="food-name" placeholder="Örn: Lahmacun">
-  </div>
-  <div class="form-group">
-    <label>Fiyat (₺)</label>
-    <input type="number" id="food-price" placeholder="Örn: 50">
-  </div>
-  <button class="submit-btn" onclick="addMenuItem()"><i class="fas fa-plus icon"></i>Menüye Ekle</button>
-
-  <h1>📋 Menü Listesi</h1>
-  <div id="menu-list">Yükleniyor...</div>
-
-  <h1>📦 Gelen Siparişler</h1>
-  <div id="orders-list">Yükleniyor...</div>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f4f8;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .login-box {
+      background-color: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 10px 0 5px;
+      color: #333;
+      text-align: left;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .login-button {
+      background-color: #e74c3c;
+      color: white;
+      font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    .login-button:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h2><i class="fas fa-lock"></i> Admin Giriş</h2>
+
+    <label for="username"><i class="fas fa-user"></i> Kullanıcı Adı</label>
+    <input type="text" id="username" placeholder="Kullanıcı adı" class="login-input">
+
+    <label for="password"><i class="fas fa-key"></i> Şifre</label>
+    <input type="password" id="password" placeholder="Şifre" class="login-input">
+    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+  <input type="checkbox" id="rememberMe"> Beni Hatırla
+</label>
+    <button class="login-button" onclick="girisYap()">
+      <i class="fas fa-sign-in-alt"></i> Giriş Yap
+    </button>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -144,258 +104,64 @@ button {
       databaseURL: "https://onlinesiparis-2cf91-default-rtdb.europe-west1.firebasedatabase.app"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function addMenuItem() {
-      const name = document.getElementById("food-name").value.trim();
-      const price = document.getElementById("food-price").value.trim();
-      if (!name || !price) {
-        Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen tüm alanları doldurun.' });
-        return;
-      }
-
-      const newRef = db.ref("menu").push();
-      newRef.set({ name, price: parseFloat(price) }).then(() => {
-        Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Yemek menüye eklendi.' });
-        document.getElementById("food-name").value = "";
-        document.getElementById("food-price").value = "";
-      });
+    async function sha256(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    const menuList = document.getElementById("menu-list");
-    db.ref("menu").on("value", (snapshot) => {
-      menuList.innerHTML = "";
-      if (!snapshot.exists()) {
-        menuList.innerHTML = "Menü boş.";
-        return;
-      }
-      snapshot.forEach((child) => {
-        const item = child.val();
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <strong>${item.name}</strong>
-          <div>Fiyat: ₺${item.price}</div>
-          <div class="actions">
-            <button class="confirm-btn" onclick="editItem('${child.key}', '${item.name}', ${item.price})"><i class="fas fa-pen icon"></i>Düzenle</button>
-            <button class="delete-btn" onclick="deleteItem('${child.key}')"><i class="fas fa-trash icon"></i>Sil</button>
-          </div>
-        `;
-        menuList.appendChild(div);
-      });
-    });
+    async function girisYap() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+  const rememberMe = document.getElementById("rememberMe").checked;
 
-    function deleteItem(id) {
-      Swal.fire({
-        title: 'Emin misin?',
-        text: 'Bu öğeyi silmek istiyor musun?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Evet, sil',
-        cancelButtonText: 'Vazgeç'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          db.ref("menu/" + id).remove();
-          Swal.fire('Silindi!', 'Ürün silindi.', 'success');
+  if (!username || !password) {
+    Swal.fire("Eksik Alan", "Lütfen tüm alanları doldurun!", "warning");
+    return;
+  }
+
+  const hash = await sha256(password);
+
+  db.ref("adminAccess/" + username).once("value").then(snapshot => {
+    if (snapshot.exists()) {
+      const savedHash = snapshot.val().passwordHash;
+      if (savedHash === hash) {
+        if (rememberMe) {
+          localStorage.setItem("loggedInUser", username);
         }
-      });
-    }
 
-    function editItem(id, currentName, currentPrice) {
-      Swal.fire({
-        title: 'Yeni Ürün Adı',
-        input: 'text',
-        inputValue: currentName,
-        showCancelButton: true,
-        confirmButtonText: 'Devam et',
-        cancelButtonText: 'İptal'
-      }).then((nameResult) => {
-        if (!nameResult.isConfirmed || !nameResult.value.trim()) return;
-
-        const newName = nameResult.value.trim();
         Swal.fire({
-          title: 'Yeni Fiyat (₺)',
-          input: 'number',
-          inputValue: currentPrice,
-          showCancelButton: true,
-          confirmButtonText: 'Güncelle',
-          cancelButtonText: 'İptal'
-        }).then((priceResult) => {
-          if (!priceResult.isConfirmed || isNaN(priceResult.value)) {
-            Swal.fire('Hata', 'Geçerli bir fiyat girin.', 'error');
-            return;
-          }
-
-          db.ref("menu/" + id).update({
-            name: newName,
-            price: parseFloat(priceResult.value)
-          }).then(() => {
-            Swal.fire('Başarılı!', 'Ürün güncellendi.', 'success');
-          });
-        });
-      });
-    }
-
-    const ordersDiv = document.getElementById("orders-list");
-    db.ref("orders").on("value", (snapshot) => {
-      ordersDiv.innerHTML = "";
-      if (!snapshot.exists()) {
-        ordersDiv.innerHTML = "<div class='card'>Henüz sipariş yok.</div>";
-        return;
-      }
-
-      snapshot.forEach((child) => {
-        const order = child.val();
-        const card = document.createElement("div");
-        card.className = "card";
-        card.style.marginBottom = "15px";
-
-        let items = "";
-        let total = 0;
-        order.items.forEach(item => {
-          const subtotal = item.price * item.quantity;
-          total += subtotal;
-          items += `• ${item.name} x${item.quantity} - ₺${subtotal}<br>`;
+          icon: "success",
+          title: `Hoş geldin, ${username}!`,
+          text: "Yönlendiriliyorsunuz...",
+          timer: 2000,
+          showConfirmButton: false
         });
 
-        const note = order.note ? `<br><strong>Not:</strong> ${order.note}` : "";
+        setTimeout(() => {
+          window.location.href = "admin_panel.html";
+        }, 2000);
 
-        const status = order.status === "onaylandı"
-          ? `<div class="status ready">✅ Sipariş Hazır</div>`
-          : `<div class="status pending">⏳ Onay bekleniyor</div>`;
-
-        card.innerHTML = `
-          <strong>${order.name} (${order.phone})</strong><br>
-          ${items}
-          <strong>Toplam: ₺${total}</strong><br>
-          <em>${order.date}</em>${note}
-          <div class="actions">
-            <button class="confirm-btn" onclick="onaylaSiparis('${child.key}')" ${order.status === "onaylandı" ? "disabled" : ""}>
-              ${order.status === "onaylandı" ? "Hazır" : "Onayla"}
-            </button>
-            <button class="delete-btn" onclick="deleteOrder('${child.key}')">Sil</button>
-          </div>
-          ${status}
-        `;
-
-        ordersDiv.appendChild(card);
-      });
-    });
-
-    function deleteOrder(id) {
-      Swal.fire({
-        title: 'Emin misin?',
-        text: 'Bu siparişi silmek istiyor musun?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Evet, sil',
-        cancelButtonText: 'Vazgeç'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          db.ref("orders/" + id).remove();
-          Swal.fire('Silindi!', 'Sipariş silindi.', 'success');
-        }
-      });
-    }
-
-    function onaylaSiparis(id) {
-      db.ref("orders/" + id).update({ status: "onaylandı" });
-      Swal.fire('Sipariş Onaylandı!', '', 'success');
-    }
-  </script>
- <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js"></script>
-
-<script>
-  const messaging = firebase.messaging();
-
-  navigator.serviceWorker.register('/firebase-messaging-sw.js').then((registration) => {
-    messaging.useServiceWorker(registration);
-
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        messaging.getToken({
-          vapidKey: "BA4BGGkfenMbP1QsbzVehQs9aJZQux71dqS59ZB-p8sgR3kLbzVCjIOPX_NYfzgvcUIG7nsFrrWyOJ3ES1Gf4NU"
-        }).then((token) => {
-          console.log("✅ FCM TOKEN:", token);
-        }).catch((err) => {
-          console.warn("❌ Token alınamadı:", err);
-        });
       } else {
-        console.warn("🔕 Bildirim izni reddedildi.");
+        Swal.fire("Hatalı Şifre", "Girdiğiniz şifre doğru değil.", "error");
       }
-    });
-  }).catch((err) => {
-    console.error("🚫 Service Worker kaydı başarısız:", err);
-  });
-</script>
-<div style="margin-top: 30px;">
-  <h1>🔒 Sistem Durumu</h1>
-  <button id="toggleButton" class="submit-btn" onclick="toggleSystem()">Durum Yükleniyor...</button>
-  <button class="submit-btn" onclick="toggleWorkingHours()">🕒 Çalışma Saati</button>
-  <button class="submit-btn" onclick="toggleWednesday()">📅 Çarşamba</button>
-</div>
-
-<script>
-  const toggleButton = document.getElementById("toggleButton");
-
-  // Manuel Aç/Kapat
-  function toggleSystem() {
-    db.ref("sistemDurumu").once("value").then((snapshot) => {
-      const current = snapshot.val()?.durum || "acik";
-      const newStatus = current === "acik" ? "kapali" : "acik";
-      const reason = newStatus === "kapali" ? "normal" : "";
-
-      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
-        Swal.fire("Sistem Durumu", `Sistem ${newStatus === "acik" ? "açıldı" : "kapandı (bakım)"}!`, "info");
-      });
-    });
-  }
-
-  // Çalışma Saati Aç/Kapat
-  function toggleWorkingHours() {
-    db.ref("sistemDurumu").once("value").then((snapshot) => {
-      const current = snapshot.val()?.durum || "acik";
-      const newStatus = current === "acik" ? "kapali" : "acik";
-      const reason = newStatus === "kapali" ? "calisma" : "";
-
-      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
-        Swal.fire("Çalışma Saatleri", `Sistem ${newStatus === "acik" ? "açıldı" : "kapatıldı (saat dışı)"}!`, "success");
-      });
-    });
-  }
-
-  // Çarşamba Aç/Kapat
-  function toggleWednesday() {
-    db.ref("sistemDurumu").once("value").then((snapshot) => {
-      const current = snapshot.val()?.durum || "acik";
-      const newStatus = current === "acik" ? "kapali" : "acik";
-      const reason = newStatus === "kapali" ? "carsamba" : "";
-
-      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
-        Swal.fire("Çarşamba Durumu", `Sistem ${newStatus === "acik" ? "açıldı" : "kapandı (Çarşamba)"}`, "warning");
-      });
-    });
-  }
-
-  // Buton görünümünü ayarla
-  db.ref("sistemDurumu").on("value", (snapshot) => {
-    const durum = snapshot.val()?.durum || "acik";
-    const neden = snapshot.val()?.neden || "normal";
-    let btnText = "Durum Yükleniyor...";
-
-    if (durum === "kapali") {
-      if (neden === "normal") btnText = "Şu Anda: Kapalı (Bakım)";
-      else if (neden === "calisma") btnText = "Şu Anda: Kapalı (Saat Dışı)";
-      else if (neden === "carsamba") btnText = "Şu Anda: Kapalı (Çarşamba)";
-      else btnText = "Şu Anda: Kapalı";
-      toggleButton.style.background = "#e53935";
     } else {
-      btnText = "Şu Anda: Açık (Kapat)";
-      toggleButton.style.background = "#43a047";
+      Swal.fire("Hatalı Kullanıcı", "Böyle bir kullanıcı bulunamadı.", "error");
     }
-
-    toggleButton.innerText = btnText;
+  });
+}
+  </script>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const rememberedUser = localStorage.getItem("loggedInUser");
+    if (rememberedUser) {
+      window.location.href = "admin_panel.html";
+    }
   });
 </script>
 </body>
