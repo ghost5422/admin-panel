@@ -332,25 +332,70 @@ button {
 <div style="margin-top: 30px;">
   <h1>🔒 Sistem Durumu</h1>
   <button id="toggleButton" class="submit-btn" onclick="toggleSystem()">Durum Yükleniyor...</button>
+  <button class="submit-btn" onclick="toggleWorkingHours()">🕒 Çalışma Saati</button>
+  <button class="submit-btn" onclick="toggleWednesday()">📅 Çarşamba</button>
 </div>
 
 <script>
   const toggleButton = document.getElementById("toggleButton");
 
+  // Manuel Aç/Kapat
   function toggleSystem() {
-    const newStatus = toggleButton.innerText === "Şu Anda: Açık (Kapat)" ? "kapali" : "acik";
-    db.ref("sistemDurumu").set({ durum: newStatus });
+    db.ref("sistemDurumu").once("value").then((snapshot) => {
+      const current = snapshot.val()?.durum || "acik";
+      const newStatus = current === "acik" ? "kapali" : "acik";
+      const reason = newStatus === "kapali" ? "normal" : "";
+
+      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
+        Swal.fire("Sistem Durumu", `Sistem ${newStatus === "acik" ? "açıldı" : "kapandı (bakım)"}!`, "info");
+      });
+    });
   }
 
+  // Çalışma Saati Aç/Kapat
+  function toggleWorkingHours() {
+    db.ref("sistemDurumu").once("value").then((snapshot) => {
+      const current = snapshot.val()?.durum || "acik";
+      const newStatus = current === "acik" ? "kapali" : "acik";
+      const reason = newStatus === "kapali" ? "calisma" : "";
+
+      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
+        Swal.fire("Çalışma Saatleri", `Sistem ${newStatus === "acik" ? "açıldı" : "kapatıldı (saat dışı)"}!`, "success");
+      });
+    });
+  }
+
+  // Çarşamba Aç/Kapat
+  function toggleWednesday() {
+    db.ref("sistemDurumu").once("value").then((snapshot) => {
+      const current = snapshot.val()?.durum || "acik";
+      const newStatus = current === "acik" ? "kapali" : "acik";
+      const reason = newStatus === "kapali" ? "carsamba" : "";
+
+      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
+        Swal.fire("Çarşamba Durumu", `Sistem ${newStatus === "acik" ? "açıldı" : "kapandı (Çarşamba)"}`, "warning");
+      });
+    });
+  }
+
+  // Buton görünümünü ayarla
   db.ref("sistemDurumu").on("value", (snapshot) => {
     const durum = snapshot.val()?.durum || "acik";
+    const neden = snapshot.val()?.neden || "normal";
+    let btnText = "Durum Yükleniyor...";
+
     if (durum === "kapali") {
-      toggleButton.innerText = "Şu Anda: Kapalı (Aç)";
+      if (neden === "normal") btnText = "Şu Anda: Kapalı (Bakım)";
+      else if (neden === "calisma") btnText = "Şu Anda: Kapalı (Saat Dışı)";
+      else if (neden === "carsamba") btnText = "Şu Anda: Kapalı (Çarşamba)";
+      else btnText = "Şu Anda: Kapalı";
       toggleButton.style.background = "#e53935";
     } else {
-      toggleButton.innerText = "Şu Anda: Açık (Kapat)";
+      btnText = "Şu Anda: Açık (Kapat)";
       toggleButton.style.background = "#43a047";
     }
+
+    toggleButton.innerText = btnText;
   });
 </script>
 </body>
