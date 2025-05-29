@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title>Admin Paneli</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e88e5">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
@@ -14,102 +12,102 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #f5f7fa;
-      padding: 20px;
-      color: #333;
-    }
-    h1 {
-      color: #2c3e50;
-      margin-top: 30px;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 10px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-    button {
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .submit-btn {
-      background: #1e88e5;
-      color: white;
-      border: none;
-      margin-top: 10px;
-    }
-    .submit-btn:hover {
-      background: #1565c0;
-    }
-    .card {
-      background: white;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .card strong {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 18px;
-    }
-    .actions {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .delete-btn, .confirm-btn {
-      border: none;
-      border-radius: 5px;
-      padding: 8px 12px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .delete-btn {
-      background: #e53935;
-      color: white;
-    }
-    .delete-btn:hover {
-      background: #c62828;
-    }
-    .confirm-btn {
-      background: #43a047;
-      color: white;
-    }
-    .confirm-btn:hover {
-      background: #388e3c;
-    }
-    .status {
-      margin-top: 8px;
-      font-weight: bold;
-    }
-    .status.pending {
-      color: orange;
-    }
-    .status.ready {
-      color: green;
-    }
-    .icon {
-      margin-right: 5px;
-    }
+  font-family: 'Poppins', sans-serif;
+  background: #eef2f7;
+  padding: 20px;
+  color: #1a1a1a;
+}
+h1 {
+  color: #2c3e50;
+  margin-top: 30px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+input, button {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+button {
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.submit-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  margin-top: 10px;
+}
+.submit-btn:hover {
+  background: #1565c0;
+}
+.card {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.card strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.delete-btn, .confirm-btn {
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.delete-btn {
+  background: #dc3545;
+  color: white;
+}
+.delete-btn:hover {
+  background: #c62828;
+}
+.confirm-btn {
+  background: #28a745;
+  color: white;
+}
+.confirm-btn:hover {
+  background: #388e3c;
+}
+.status {
+  margin-top: 8px;
+  font-weight: bold;
+}
+.status.pending {
+  color: orange;
+}
+.status.ready {
+  color: green;
+}
+.icon {
+  margin-right: 5px;
+}
   </style>
 </head>
 <body>
@@ -319,9 +317,7 @@
         messaging.getToken({
           vapidKey: "BA4BGGkfenMbP1QsbzVehQs9aJZQux71dqS59ZB-p8sgR3kLbzVCjIOPX_NYfzgvcUIG7nsFrrWyOJ3ES1Gf4NU"
         }).then((token) => {
-  alert("✅ FCM TOKEN:\n" + token); // ekrana bastır
-  console.log("✅ FCM TOKEN:", token);
-})
+          console.log("✅ FCM TOKEN:", token);
         }).catch((err) => {
           console.warn("❌ Token alınamadı:", err);
         });
@@ -331,6 +327,30 @@
     });
   }).catch((err) => {
     console.error("🚫 Service Worker kaydı başarısız:", err);
+  });
+</script>
+<div style="margin-top: 30px;">
+  <h1>🔒 Sistem Durumu</h1>
+  <button id="toggleButton" class="submit-btn" onclick="toggleSystem()">Durum Yükleniyor...</button>
+</div>
+
+<script>
+  const toggleButton = document.getElementById("toggleButton");
+
+  function toggleSystem() {
+    const newStatus = toggleButton.innerText === "Şu Anda: Açık (Kapat)" ? "kapali" : "acik";
+    db.ref("sistemDurumu").set({ durum: newStatus });
+  }
+
+  db.ref("sistemDurumu").on("value", (snapshot) => {
+    const durum = snapshot.val()?.durum || "acik";
+    if (durum === "kapali") {
+      toggleButton.innerText = "Şu Anda: Kapalı (Aç)";
+      toggleButton.style.background = "#e53935";
+    } else {
+      toggleButton.innerText = "Şu Anda: Açık (Kapat)";
+      toggleButton.style.background = "#43a047";
+    }
   });
 </script>
 </body>
