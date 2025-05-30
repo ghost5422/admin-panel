@@ -1,3 +1,565 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Paneli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+  font-family: 'Poppins', sans-serif;
+  background: #eef2f7;
+  padding: 20px;
+  color: #1a1a1a;
+}
+h1 {
+  color: #2c3e50;
+  margin-top: 30px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+input, button {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+button {
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.submit-btn-red {
+  background-color: #e74c3c;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn-red:hover {
+  background-color: #c0392b;
+}
+.card {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.card strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.delete-btn, .confirm-btn {
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.delete-btn {
+  background: #dc3545;
+  color: white;
+}
+.delete-btn:hover {
+  background: #c62828;
+}
+.confirm-btn {
+  background: #28a745;
+  color: white;
+}
+.confirm-btn:hover {
+  background: #388e3c;
+}
+.status {
+  margin-top: 8px;
+  font-weight: bold;
+}
+.status.pending {
+  color: orange;
+}
+.status.ready {
+  color: green;
+}
+.icon {
+  margin-right: 5px;
+}
+.title-heading {
+  font-size: 24px;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+/* Ortak buton stili */
+.btn-danger,
+.btn-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Kırmızı Buton */
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* Gri/Mavi Buton */
+.btn-info {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+}
+.btn-info:hover {
+  background-color: #dcdde1;
+}
+
+.logout-bar {
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  padding: 12px;
+  display: flex;
+  justify-content: flex-end;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logout-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+.button-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-button {
+  background-color: #e74c3c;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.admin-button:hover {
+  background-color: #c0392b;
+}
+
+.admin-button.logout {
+  background-color: #d63031;
+}
+
+.admin-button.logout:hover {
+  background-color: #b71c1c;
+}
+
+  </style>
+</head>
+<body>
+<script>
+  // Oturum kontrolü
+  const user = localStorage.getItem("loggedInUser");
+  if (!user) {
+    // Kullanıcı giriş yapmamışsa yönlendir
+    window.location.href = "giris.html";
+  }
+</script>
+<div class="button-row">
+  <button class="admin-button logout" onclick="logout()">
+    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+  </button>
+
+  <button class="admin-button" onclick="window.location.href='kullanici.html'">
+  <i class="fas fa-user-cog"></i> Kullanıcı Ayarları
+</button>
+
+</div>
+  <h1 class="title-heading">
+  <i class="fas fa-utensils"></i> Menü Ekle
+</h1>
+  <div class="form-group">
+    <label>Yemek Adı</label>
+    <input type="text" id="food-name" placeholder="Örn: Lahmacun">
+  </div>
+  <div class="form-group">
+    <label>Fiyat (₺)</label>
+    <input type="number" id="food-price" placeholder="Örn: 50">
+  </div>
+  <button class="submit-btn-red" onclick="addMenuItem()">
+  <i class="fas fa-plus-circle"></i> Menüye Ekle
+</button>
+
+  <h1>📋 Menü Listesi</h1>
+  <div id="menu-list">Yükleniyor...</div>
+
+  <h1>📦 Gelen Siparişler</h1>
+  <div id="orders-list">Yükleniyor...</div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDNbgKzJdBKEZUnWH09Az6ZCwUefWJXhY",
+      authDomain: "onlinesiparis-2cf91.firebaseapp.com",
+      projectId: "onlinesiparis-2cf91",
+      storageBucket: "onlinesiparis-2cf91.appspot.com",
+      messagingSenderId: "366801664755",
+      appId: "1:366801664755:web:57b577f1943ebdf1ab8c85",
+      databaseURL: "https://onlinesiparis-2cf91-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function addMenuItem() {
+      const name = document.getElementById("food-name").value.trim();
+      const price = document.getElementById("food-price").value.trim();
+      if (!name || !price) {
+        Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen tüm alanları doldurun.' });
+        return;
+      }
+
+      const newRef = db.ref("menu").push();
+      newRef.set({ name, price: parseFloat(price) }).then(() => {
+        Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Yemek menüye eklendi.' });
+        document.getElementById("food-name").value = "";
+        document.getElementById("food-price").value = "";
+      });
+    }
+
+    const menuList = document.getElementById("menu-list");
+    db.ref("menu").on("value", (snapshot) => {
+      menuList.innerHTML = "";
+      if (!snapshot.exists()) {
+        menuList.innerHTML = "Menü boş.";
+        return;
+      }
+      snapshot.forEach((child) => {
+        const item = child.val();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <strong>${item.name}</strong>
+          <div>Fiyat: ₺${item.price}</div>
+          <div class="actions">
+            <button class="confirm-btn" onclick="editItem('${child.key}', '${item.name}', ${item.price})"><i class="fas fa-pen icon"></i>Düzenle</button>
+            <button class="delete-btn" onclick="deleteItem('${child.key}')"><i class="fas fa-trash icon"></i>Sil</button>
+          </div>
+        `;
+        menuList.appendChild(div);
+      });
+    });
+
+    function deleteItem(id) {
+      Swal.fire({
+        title: 'Emin misin?',
+        text: 'Bu öğeyi silmek istiyor musun?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, sil',
+        cancelButtonText: 'Vazgeç'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          db.ref("menu/" + id).remove();
+          Swal.fire('Silindi!', 'Ürün silindi.', 'success');
+        }
+      });
+    }
+
+    function editItem(id, currentName, currentPrice) {
+      Swal.fire({
+        title: 'Yeni Ürün Adı',
+        input: 'text',
+        inputValue: currentName,
+        showCancelButton: true,
+        confirmButtonText: 'Devam et',
+        cancelButtonText: 'İptal'
+      }).then((nameResult) => {
+        if (!nameResult.isConfirmed || !nameResult.value.trim()) return;
+
+        const newName = nameResult.value.trim();
+        Swal.fire({
+          title: 'Yeni Fiyat (₺)',
+          input: 'number',
+          inputValue: currentPrice,
+          showCancelButton: true,
+          confirmButtonText: 'Güncelle',
+          cancelButtonText: 'İptal'
+        }).then((priceResult) => {
+          if (!priceResult.isConfirmed || isNaN(priceResult.value)) {
+            Swal.fire('Hata', 'Geçerli bir fiyat girin.', 'error');
+            return;
+          }
+
+          db.ref("menu/" + id).update({
+            name: newName,
+            price: parseFloat(priceResult.value)
+          }).then(() => {
+            Swal.fire('Başarılı!', 'Ürün güncellendi.', 'success');
+          });
+        });
+      });
+    }
+
+    const ordersDiv = document.getElementById("orders-list");
+    db.ref("orders").on("value", (snapshot) => {
+      ordersDiv.innerHTML = "";
+      if (!snapshot.exists()) {
+        ordersDiv.innerHTML = "<div class='card'>Henüz sipariş yok.</div>";
+        return;
+      }
+
+      snapshot.forEach((child) => {
+        const order = child.val();
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.marginBottom = "15px";
+
+        let items = "";
+        let total = 0;
+        order.items.forEach(item => {
+          const subtotal = item.price * item.quantity;
+          total += subtotal;
+          items += `• ${item.name} x${item.quantity} - ₺${subtotal}<br>`;
+        });
+
+        const note = order.note ? `<br><strong>Not:</strong> ${order.note}` : "";
+
+        const status = order.status === "onaylandı"
+          ? `<div class="status ready">✅ Sipariş Hazır</div>`
+          : `<div class="status pending">⏳ Onay bekleniyor</div>`;
+
+        card.innerHTML = `
+          <strong>${order.name} (${order.phone})</strong><br>
+          ${items}
+          <strong>Toplam: ₺${total}</strong><br>
+          <em>${order.date}</em>${note}
+          <div class="actions">
+            <button class="confirm-btn" onclick="onaylaSiparis('${child.key}')" ${order.status === "onaylandı" ? "disabled" : ""}>
+              ${order.status === "onaylandı" ? "Hazır" : "Onayla"}
+            </button>
+            <button class="delete-btn" onclick="deleteOrder('${child.key}')">Sil</button>
+          </div>
+          ${status}
+        `;
+
+        ordersDiv.appendChild(card);
+      });
+    });
+
+    function deleteOrder(id) {
+      Swal.fire({
+        title: 'Emin misin?',
+        text: 'Bu siparişi silmek istiyor musun?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, sil',
+        cancelButtonText: 'Vazgeç'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          db.ref("orders/" + id).remove();
+          Swal.fire('Silindi!', 'Sipariş silindi.', 'success');
+        }
+      });
+    }
+
+    function onaylaSiparis(id) {
+      db.ref("orders/" + id).update({ status: "onaylandı" });
+      Swal.fire('Sipariş Onaylandı!', '', 'success');
+    }
+  </script>
+ <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js"></script>
+
+<script>
+  const messaging = firebase.messaging();
+
+  navigator.serviceWorker.register('/firebase-messaging-sw.js').then((registration) => {
+    messaging.useServiceWorker(registration);
+
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        messaging.getToken({
+          vapidKey: "BA4BGGkfenMbP1QsbzVehQs9aJZQux71dqS59ZB-p8sgR3kLbzVCjIOPX_NYfzgvcUIG7nsFrrWyOJ3ES1Gf4NU"
+        }).then((token) => {
+          console.log("✅ FCM TOKEN:", token);
+        }).catch((err) => {
+          console.warn("❌ Token alınamadı:", err);
+        });
+      } else {
+        console.warn("🔕 Bildirim izni reddedildi.");
+      }
+    });
+  }).catch((err) => {
+    console.error("🚫 Service Worker kaydı başarısız:", err);
+  });
+</script>
+<div style="margin-top: 30px;">
+  <h1 class="title-heading"><i class="fas fa-lock"></i> Sistem Durumu</h1>
+
+  <button id="toggleButton" class="btn-danger" onclick="toggleSystem()">
+    <i class="fas fa-tools"></i> Şu Anda: Kapalı (Bakım)
+  </button>
+
+  <button class="btn-info" onclick="toggleWorkingHours()">
+    <i class="fas fa-clock"></i> Çalışma Saati
+  </button>
+
+  <button class="btn-info" onclick="toggleWednesday()">
+    <i class="fas fa-calendar-day"></i> Çarşamba
+  </button>
+</div>
+
+<script>
+  const toggleButton = document.getElementById("toggleButton");
+
+  // Manuel Aç/Kapat
+  function toggleSystem() {
+    db.ref("sistemDurumu").once("value").then((snapshot) => {
+      const current = snapshot.val()?.durum || "acik";
+      const newStatus = current === "acik" ? "kapali" : "acik";
+      const reason = newStatus === "kapali" ? "normal" : "";
+
+      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
+        Swal.fire("Sistem Durumu", `Sistem ${newStatus === "acik" ? "açıldı" : "kapandı (bakım)"}!`, "info");
+      });
+    });
+  }
+
+  // Çalışma Saati Aç/Kapat
+  function toggleWorkingHours() {
+    db.ref("sistemDurumu").once("value").then((snapshot) => {
+      const current = snapshot.val()?.durum || "acik";
+      const newStatus = current === "acik" ? "kapali" : "acik";
+      const reason = newStatus === "kapali" ? "calisma" : "";
+
+      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
+        Swal.fire("Çalışma Saatleri", `Sistem ${newStatus === "acik" ? "açıldı" : "kapatıldı (saat dışı)"}!`, "success");
+      });
+    });
+  }
+
+  // Çarşamba Aç/Kapat
+  function toggleWednesday() {
+    db.ref("sistemDurumu").once("value").then((snapshot) => {
+      const current = snapshot.val()?.durum || "acik";
+      const newStatus = current === "acik" ? "kapali" : "acik";
+      const reason = newStatus === "kapali" ? "carsamba" : "";
+
+      db.ref("sistemDurumu").set({ durum: newStatus, neden: reason }).then(() => {
+        Swal.fire("Çarşamba Durumu", `Sistem ${newStatus === "acik" ? "açıldı" : "kapandı (Çarşamba)"}`, "warning");
+      });
+    });
+  }
+
+  // Buton görünümünü ayarla
+  db.ref("sistemDurumu").on("value", (snapshot) => {
+    const durum = snapshot.val()?.durum || "acik";
+    const neden = snapshot.val()?.neden || "normal";
+    let btnText = "Durum Yükleniyor...";
+
+    if (durum === "kapali") {
+      if (neden === "normal") btnText = "Şu Anda: Kapalı (Bakım)";
+      else if (neden === "calisma") btnText = "Şu Anda: Kapalı (Saat Dışı)";
+      else if (neden === "carsamba") btnText = "Şu Anda: Kapalı (Çarşamba)";
+      else btnText = "Şu Anda: Kapalı";
+      toggleButton.style.background = "#e53935";
+    } else {
+      btnText = "Şu Anda: Açık (Kapat)";
+      toggleButton.style.background = "#43a047";
+    }
+
+    toggleButton.innerText = btnText;
+  });
+</script>
+<script>
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "index.html"; // giriş sayfan neyse onu yaz
+  }
+</script>
+<!-- sayfa içeriği bitti -->
+<script>
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "index.html"; // giriş sayfanın adı buysa bu kalabilir
+  }
+</script>
 <script>
   let lastOrderKey = null;
 
@@ -23,3 +585,6 @@
     }
   });
 </script>
+<audio id="notification-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-clear-interface-notification-259.wav" preload="auto"></audio>
+</body>
+</html>
