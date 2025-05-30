@@ -401,9 +401,14 @@ button {
 
         const note = order.note ? `<br><strong>Not:</strong> ${order.note}` : "";
 
-        const status = order.status === "onaylandı"
-          ? `<div class="status ready">✅ Sipariş Hazır</div>`
-          : `<div class="status pending">⏳ Onay bekleniyor</div>`;
+        let status = "";
+if (order.status === "onaylandı") {
+  status = `<div class="status ready">✅ Sipariş Hazır</div>`;
+} else if (order.status === "iptal") {
+  status = `<div class="status" style="color:#6c757d;">❌ Sipariş İptal</div>`;
+} else {
+  status = `<div class="status pending">⏳ Onay bekleniyor</div>`;
+}
 
         card.innerHTML = `
           <strong>${order.name} (${order.phone})</strong><br>
@@ -415,9 +420,26 @@ button {
               ${order.status === "onaylandı" ? "Hazır" : "Onayla"}
             </button>
             <button class="delete-btn" onclick="deleteOrder('${child.key}')">Sil</button>
+ <button class="delete-btn" style="background-color: #6c757d;" onclick="iptalEt('${child.key}')">İptal Et</button>
           </div>
           ${status}
         `;
+
+function iptalEt(id) {
+  Swal.fire({
+    title: 'Sipariş İptal Edilsin mi?',
+    text: "Bu işlem geri alınamaz!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Evet, iptal et',
+    cancelButtonText: 'Vazgeç'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      db.ref("orders/" + id).update({ status: "iptal" });
+      Swal.fire('İptal Edildi!', 'Sipariş iptal edildi.', 'success');
+    }
+  });
+}
 
         ordersDiv.appendChild(card);
       });
@@ -546,6 +568,21 @@ button {
 
     toggleButton.innerText = btnText;
   });
+function iptalEt(id) {
+  Swal.fire({
+    title: 'Sipariş İptal Edilsin mi?',
+    text: "Bu işlem geri alınamaz!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Evet, iptal et',
+    cancelButtonText: 'Vazgeç'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      db.ref("orders/" + id).update({ status: "iptal" });
+      Swal.fire('İptal Edildi!', 'Sipariş iptal edildi.', 'success');
+    }
+  });
+}
 </script>
 <script>
   function logout() {
