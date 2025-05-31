@@ -1,21 +1,23 @@
 {
   "name": "Esos Fast Food Kontrol",
   "short_name": "Esos Panel",
-  "description": "Esos Fast Food için admin sipariş kontrol paneli",
-  "start_url": "index.html",
+  "description": "Esos Fast Food için admin paneli",
+  "start_url": "/admin-panel/index.html",
+  "scope": "/admin-panel/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1e88e5",
   "orientation": "portrait",
   "icons": [
-  {
-    "src": "icon.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "icon.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-]
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
