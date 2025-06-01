@@ -227,6 +227,26 @@ button {
   background-color: #b71c1c;
 }
 
+.menu-box-admin {
+  background: #fdfdfd;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 450px;
+  margin: 10px 0;
+}
+.menu-box-admin ul {
+  list-style: none;
+  padding-left: 0;
+}
+.menu-box-admin li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
   </style>
 </head>
 <body>
@@ -262,7 +282,27 @@ button {
   <button class="submit-btn-red" onclick="addMenuItem()">
   <i class="fas fa-plus-circle"></i> Menüye Ekle
 </button>
-
+   <h1 class="title-heading">
+  <i class="fas fa-calendar-day"></i> Günün Menüsünü Ekle
+</h1>
+<div class="form-group">
+  <label for="menuText">Bugünkü Menü (Virgülle ayır)</label>
+  <input type="text" id="menuText" placeholder="Örn: Ezogelin Çorbası, Köfte, Salata">
+</div>
+<div class="button-row">
+  <button class="submit-btn-red" onclick="ekleMenu()">
+    <i class="fas fa-save"></i> Menüyü Kaydet
+  </button>
+  <button class="submit-btn-red" onclick="silMenu()" style="background-color: #e74c3c;">
+    <i class="fas fa-trash-alt"></i> Menüyü Sil
+  </button>
+  <h2 style="margin-top:30px;">
+  <i class="fas fa-eye"></i> Bugünkü Menü
+</h2>
+<div id="bugunkuMenu" class="menu-box-admin">
+  <p>Yükleniyor...</p>
+</div>
+</div>
   <h1>📋 Menü Listesi</h1>
   <div id="menu-list">Yükleniyor...</div>
 
@@ -623,7 +663,7 @@ function iptalEt(id) {
   });
 </script>
 <audio id="notification-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-clear-interface-notification-259.wav" preload="auto"></audio>
-  <script>
+<script>
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.addEventListener('load', async () => {
     try {
@@ -641,6 +681,82 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
     }
   });
 }
+function ekleMenu() {
+  const menuText = document.getElementById("menuText").value.trim();
+  if (!menuText) {
+    Swal.fire("Hata", "Lütfen günün menüsünü girin", "warning");
+    return;
+  }
+
+  const bugun = new Date().toISOString().split('T')[0];
+
+  firebase.database().ref("gununMenusu/" + bugun).set({
+    baslik: "Günün Menüsü",
+    aciklama: menuText
+  }).then(() => {
+    Swal.fire("Başarılı", "Menü kaydedildi", "success");
+    document.getElementById("menuText").value = "";
+    bugunkuMenuyuGetir(); // ✅ Menü kutusunu güncelle
+  }).catch(err => {
+    Swal.fire("Hata", "Menü kaydedilemedi", "error");
+    console.error(err);
+  });
+}
+
+function silMenu() {
+  const bugun = new Date().toISOString().split('T')[0];
+
+  Swal.fire({
+    title: 'Emin misin?',
+    text: "Bugünkü menü silinecek!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e74c3c',
+    cancelButtonColor: '#aaa',
+    confirmButtonText: 'Evet, sil',
+    cancelButtonText: 'İptal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      firebase.database().ref("gununMenusu/" + bugun).remove()
+      .then(() => {
+        Swal.fire("Silindi", "Bugünkü menü silindi", "success");
+        bugunkuMenuyuGetir(); // ✅ Bu satır eklendi
+      }).catch(err => {
+        Swal.fire("Hata", "Silme işlemi başarısız", "error");
+        console.error(err);
+      });
+    }
+  });
+}
+
+function bugunkuMenuyuGetir() {
+  const bugun = new Date().toISOString().split('T')[0];
+
+  firebase.database().ref("gununMenusu/" + bugun).once("value").then(snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      const items = data.aciklama.split(",").map(item => item.trim());
+      const listeHTML = items.map(item => `
+        <li><i class="fas fa-check-circle" style="color:green;"></i> ${item}</li>
+      `).join("");
+
+      document.getElementById("bugunkuMenu").innerHTML = `
+        <h4>${data.baslik}</h4>
+        <ul>${listeHTML}</ul>
+      `;
+    } else {
+      document.getElementById("bugunkuMenu").innerHTML = `
+        <p><i class="fas fa-info-circle"></i> Bugün için menü girilmemiş.</p>`;
+    }
+  }).catch(() => {
+    document.getElementById("bugunkuMenu").innerHTML = `
+      <p><i class="fas fa-times-circle"></i> Menü yüklenemedi.</p>`;
+  });
+}
+
+// Sayfa yüklendiğinde çağır
+window.addEventListener("load", bugunkuMenuyuGetir);
+
 </script>
 </body>
 </html>
