@@ -247,6 +247,44 @@ button {
   align-items: center;
   gap: 6px;
 }
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  margin-left: 10px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #4CAF50;
+}
+input:checked + .slider:before {
+  transform: translateX(22px);
   </style>
 </head>
 <body>
@@ -255,7 +293,7 @@ button {
   const user = localStorage.getItem("loggedInUser");
   if (!user) {
     // Kullanıcı giriş yapmamışsa yönlendir
-    window.location.href = "index.html";
+    window.location.href = "giris.html";
   }
 </script>
 <div class="button-row">
@@ -279,6 +317,7 @@ button {
     <label>Fiyat (₺)</label>
     <input type="number" id="food-price" placeholder="Örn: 50">
   </div>
+
   <button class="submit-btn-red" onclick="addMenuItem()">
   <i class="fas fa-plus-circle"></i> Menüye Ekle
 </button>
@@ -328,20 +367,31 @@ button {
     const db = firebase.database();
 
     function addMenuItem() {
-      const name = document.getElementById("food-name").value.trim();
-      const price = document.getElementById("food-price").value.trim();
-      if (!name || !price) {
-        Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen tüm alanları doldurun.' });
-        return;
-      }
+  const name = document.getElementById("food-name").value.trim();
+  const price = document.getElementById("food-price").value.trim();
+  const active = true; // her yeni ürün aktif olarak eklenecek
 
-      const newRef = db.ref("menu").push();
-      newRef.set({ name, price: parseFloat(price) }).then(() => {
-        Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Yemek menüye eklendi.' });
-        document.getElementById("food-name").value = "";
-        document.getElementById("food-price").value = "";
-      });
-    }
+  if (!name || !price) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Uyarı',
+      text: 'Lütfen tüm alanları doldurun.'
+    });
+    return;
+  }
+
+  const newRef = db.ref("menu").push();
+  newRef.set({ name, price: parseFloat(price), active }).then(() => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Başarılı!',
+      text: 'Yemek menüye eklendi.'
+    });
+
+    document.getElementById("food-name").value = "";
+    document.getElementById("food-price").value = "";
+  });
+}
 
     const menuList = document.getElementById("menu-list");
     db.ref("menu").on("value", (snapshot) => {
@@ -355,13 +405,21 @@ button {
         const div = document.createElement("div");
         div.className = "card";
         div.innerHTML = `
-          <strong>${item.name}</strong>
-          <div>Fiyat: ₺${item.price}</div>
-          <div class="actions">
-            <button class="confirm-btn" onclick="editItem('${child.key}', '${item.name}', ${item.price})"><i class="fas fa-pen icon"></i>Düzenle</button>
-            <button class="delete-btn" onclick="deleteItem('${child.key}')"><i class="fas fa-trash icon"></i>Sil</button>
-          </div>
-        `;
+  <strong>${item.name}</strong>
+  <div>Fiyat: ₺${item.price}</div>
+  <label class="switch">
+    <input type="checkbox" onchange="toggleActiveStatus('${child.key}', this.checked)" ${item.active ? "checked" : ""}>
+    <span class="slider round"></span>
+  </label>
+  <div class="actions">
+    <button class="confirm-btn" onclick="editItem('${child.key}', '${item.name}', ${item.price})">
+      <i class="fas fa-pen icon"></i>Düzenle
+    </button>
+    <button class="delete-btn" onclick="deleteItem('${child.key}')">
+      <i class="fas fa-trash icon"></i>Sil
+    </button>
+  </div>
+`;
         menuList.appendChild(div);
       });
     });
@@ -702,6 +760,18 @@ function ekleMenu() {
     console.error(err);
   });
 }
+
+function toggleActiveStatus(id, status) {
+  db.ref("menu/" + id).update({ active: status }).then(() => {
+    Swal.fire({
+      title: status ? "Aktifleştirildi" : "Pasifleştirildi",
+      icon: "success",
+      timer: 800,
+      showConfirmButton: false
+    });
+  });
+}
+
 
 function silMenu() {
   const bugun = new Date().toISOString().split('T')[0];
